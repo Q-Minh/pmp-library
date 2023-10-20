@@ -7,102 +7,16 @@ project(
   HOMEPAGE_URL "https://www.pmp-library.org")
 cmake_policy(SET CMP0072 NEW)
 
-option(PMP_BUILD_EXAMPLES "Build the PMP examples" ON)
-option(PMP_BUILD_TESTS "Build the PMP test programs" ON)
-option(PMP_BUILD_DOCS "Build the PMP documentation" ON)
-option(PMP_BUILD_VIS "Build the PMP visualization tools" ON)
-option(PMP_INSTALL "Install the PMP library and headers" ON)
+option(PMP_BUILD_EXAMPLES "Build the PMP examples" OFF)
+option(PMP_BUILD_TESTS "Build the PMP test programs" OFF)
+option(PMP_BUILD_DOCS "Build the PMP documentation" OFF)
+option(PMP_BUILD_VIS "Build the PMP visualization tools" OFF)
+option(PMP_INSTALL "Install the PMP library and headers" OFF)
 option(PMP_STRICT_COMPILATION "Treat compiler warnings as errors" ON)
-option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
-# set output paths
-set(PROJECT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
-set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR})
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
-
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-
-if(PMP_BUILD_VIS)
-  set(GLFW_SOURCE_DIR "external/glfw-3.3.8")
-  set(GLEW_SOURCE_DIR "external/glew-2.2.0")
-  set(IMGUI_SOURCE_DIR "external/imgui-1.89.8")
-  set(STB_IMAGE_SOURCE_DIR "external/stb_image-2.28")
-  set(STB_IMAGE_WRITE_SOURCE_DIR "external/stb_image_write-1.16")
-
-  add_subdirectory(${STB_IMAGE_WRITE_SOURCE_DIR})
-  add_subdirectory(${STB_IMAGE_SOURCE_DIR})
-
-  # Building only the GLFW lib
-  set(BUILD_SHARED_LIBS
-      OFF
-      CACHE BOOL "")
-  set(GLFW_BUILD_EXAMPLES
-      OFF
-      CACHE BOOL "")
-  set(GLFW_BUILD_TESTS
-      OFF
-      CACHE BOOL "")
-  set(GLFW_BUILD_DOCS
-      OFF
-      CACHE BOOL "")
-  set(GLFW_INSTALL
-      OFF
-      CACHE BOOL "")
-
-  # setup use of GLFW and GLEW
-  if(NOT EMSCRIPTEN)
-    add_subdirectory(${GLFW_SOURCE_DIR} ${GLEW_SOURCE_DIR})
-
-    add_definitions(-DGLEW_STATIC)
-    add_library(glew STATIC ${GLEW_SOURCE_DIR}/src/glew.c
-                            ${GLEW_SOURCE_DIR}/include)
-    set_property(TARGET glew PROPERTY POSITION_INDEPENDENT_CODE ON)
-    target_include_directories(glew PUBLIC ${GLEW_SOURCE_DIR}/include
-                                           ${GLFW_SOURCE_DIR}/include)
-    target_link_libraries(glew ${GLFW_LIBRARIES})
-  endif()
-
-  # setup IMGUI
-  add_subdirectory(${IMGUI_SOURCE_DIR})
-endif(PMP_BUILD_VIS)
-
-if(NOT DEFINED EIGEN3_INCLUDE_DIR)
-  set(EIGEN3_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/external/eigen-3.4.0")
+if (NOT TARGET Eigen3::Eigen)
+  find_package(Eigen3 3.4 CONFIG REQUIRED)
 endif()
-find_package(Eigen3 3.4.0 REQUIRED)
-
-include_directories(${PROJECT_SOURCE_DIR}/src/)
-
-# setup for code coverage testing
-if(CMAKE_BUILD_TYPE STREQUAL "Debug"
-   AND ENABLE_COVERAGE
-   AND NOT WIN32)
-  enable_testing()
-
-  # set compiler flags
-  set(CMAKE_CXX_FLAGS "-g -O0 --coverage")
-
-  # find required tools
-  find_program(LCOV lcov REQUIRED)
-  find_program(GENHTML genhtml REQUIRED)
-
-  # add coverage target
-  add_custom_target(
-    coverage
-    # gather data
-    COMMAND
-      ${LCOV} --directory . --capture --exclude '*/external/*' --exclude
-      '*/tests/*' --exclude '/usr/*' --exclude '/Applications/*' --exclude
-      'v1/*' --output-file coverage.info
-    # generate report
-    COMMAND ${GENHTML} --demangle-cpp -o coverage coverage.info
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-endif()
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # set default compiler flags for both gcc and clang
 set(COMMON_CXX_FLAGS "-pedantic -Wall -Wextra -Wshadow")
@@ -133,16 +47,6 @@ if(MSVC)
   add_compile_options(/wd4267) # conversion from size_t
   add_compile_options(/wd4244) # conversion from double to float
   add_compile_options(/wd4305) # truncation from double to float
-endif()
-
-if(EMSCRIPTEN)
-  add_compile_options(--no-heap-copy)
-  add_compile_options(-fexceptions)
-  add_link_options(-fexceptions)
-  add_link_options(
-    "SHELL:-sWASM=1 -sUSE_WEBGL2=1 -sUSE_GLFW=3 -sALLOW_MEMORY_GROWTH=1 -sALLOW_TABLE_GROWTH=1 -sSTACK_SIZE=5MB"
-  )
-  set(CMAKE_EXECUTABLE_SUFFIX ".html")
 endif()
 
 # make a release build by default
@@ -177,23 +81,16 @@ option(WITH_CLANG_TIDY "Run clang-tidy checks" OFF)
 include(clang-tidy)
 
 # which directories to process
-if(EMSCRIPTEN)
-  add_subdirectory(src/pmp)
-  if(PMP_BUILD_EXAMPLES)
-    add_subdirectory(examples)
-  endif()
-else()
-  add_subdirectory(src/pmp)
-  if(PMP_BUILD_DOCS)
-    add_subdirectory(docs)
-  endif()
-  if(PMP_BUILD_EXAMPLES)
-    add_subdirectory(examples)
-  endif()
-  if(PMP_BUILD_TESTS)
-    enable_testing()
-    add_subdirectory(tests)
-  endif()
+add_subdirectory(src/pmp)
+if(PMP_BUILD_DOCS)
+  add_subdirectory(docs)
+endif()
+if(PMP_BUILD_EXAMPLES)
+  add_subdirectory(examples)
+endif()
+if(PMP_BUILD_TESTS)
+  enable_testing()
+  add_subdirectory(tests)
 endif()
 
 if(NOT EMSCRIPTEN AND PMP_INSTALL)
