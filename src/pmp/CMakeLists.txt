@@ -1,7 +1,11 @@
 file(GLOB SOURCES ./*.cpp)
 file(GLOB HEADERS ./*.h)
 
-add_library(pmp $<IF:$<BOOL:${PMP_BUILD_SHARED_LIBRARY}>,"SHARED","STATIC">)
+if (${PMP_BUILD_SHARED_LIBRARY})
+  add_library(pmp SHARED)
+else()
+  add_library(pmp STATIC)
+endif()
 add_library(pmp::pmp ALIAS pmp)
 set_target_properties(pmp PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
 target_sources(pmp PRIVATE ${SOURCES} ${HEADERS})
