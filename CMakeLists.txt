@@ -77,10 +77,6 @@ if(PMP_INDEX_TYPE EQUAL 64)
   add_definitions(-DPMP_INDEX_TYPE_64)
 endif()
 
-# setup clang-tidy if program found
-option(WITH_CLANG_TIDY "Run clang-tidy checks" OFF)
-include(clang-tidy)
-
 # which directories to process
 add_subdirectory(src/pmp)
 if(PMP_BUILD_DOCS)
@@ -135,6 +131,3 @@ if(NOT TARGET uninstall AND PMP_INSTALL)
                               "${PROJECT_BINARY_DIR}/cmake_uninstall.cmake")
 
 endif()
-
-# add clang-format target if program is found
-include(clang-format)

@@ -12,10 +12,6 @@ endif()
 
 set_target_properties(pmp PROPERTIES VERSION ${PROJECT_VERSION})
 
-if(WITH_CLANG_TIDY)
-  set_target_properties(pmp PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
-endif()
-
 target_include_directories(
   pmp
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../>
