@@ -14,6 +14,8 @@ option(PMP_BUILD_VIS "Build the PMP visualization tools" OFF)
 option(PMP_INSTALL "Install the PMP library and headers" OFF)
 option(PMP_STRICT_COMPILATION "Treat compiler warnings as errors" ON)
 option(PMP_BUILD_SHARED_LIBRARY "Build PMP as shared library" ON)
+option(PMP_SCALAR_TYPE "Type of floating point precision used by PMP" 64)
+option(PMP_INDEX_TYPE "Type of integer used by PMP" 32)
 
 if (NOT TARGET Eigen3::Eigen)
   find_package(Eigen3 3.4 CONFIG REQUIRED)
