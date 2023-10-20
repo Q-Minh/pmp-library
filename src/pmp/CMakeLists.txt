@@ -4,7 +4,7 @@ file(GLOB HEADERS ./*.h)
 add_library(pmp $<IF:$<BOOL:${PMP_BUILD_SHARED_LIBRARY}>,"SHARED","STATIC">)
 add_library(pmp::pmp ALIAS pmp)
 set_target_properties(pmp PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
-target_sources(pmp ${SOURCES} ${HEADERS})
+target_sources(pmp PRIVATE ${SOURCES} ${HEADERS})
 
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
