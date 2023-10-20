@@ -10,6 +10,14 @@ add_library(pmp::pmp ALIAS pmp)
 set_target_properties(pmp PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
 target_sources(pmp PRIVATE ${SOURCES} ${HEADERS})
 
+if (PMP_SCALAR_TYPE EQUAL 64)
+  target_compile_definitions(pmp PUBLIC PMP_SCALAR_TYPE_64)
+endif()
+
+if(PMP_INDEX_TYPE EQUAL 64)
+  target_compile_definitions(pmp PUBLIC PMP_INDEX_TYPE_64)
+endif()
+
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
   target_link_libraries(pmp PUBLIC OpenMP::OpenMP_CXX)
