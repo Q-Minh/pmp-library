@@ -1,7 +1,7 @@
 file(GLOB SOURCES ./*.cpp)
 file(GLOB HEADERS ./*.h)
 
-add_library(pmp ${SOURCES} ${HEADERS})
+add_library(pmp $<IF:${PMP_BUILD_SHARED_LIBRARY},SHARED,STATIC> ${SOURCES} ${HEADERS})
 set_target_properties(pmp PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 find_package(OpenMP)

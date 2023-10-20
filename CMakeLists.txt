@@ -13,6 +13,7 @@ option(PMP_BUILD_DOCS "Build the PMP documentation" OFF)
 option(PMP_BUILD_VIS "Build the PMP visualization tools" OFF)
 option(PMP_INSTALL "Install the PMP library and headers" OFF)
 option(PMP_STRICT_COMPILATION "Treat compiler warnings as errors" ON)
+option(PMP_BUILD_SHARED_LIBRARY "Build PMP as shared library" ON)
 
 if (NOT TARGET Eigen3::Eigen)
   find_package(Eigen3 3.4 CONFIG REQUIRED)
