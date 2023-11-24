@@ -14,12 +14,14 @@ namespace pmp {
 //! \param mesh The input mesh, modified in place.
 //! \param edge_length The target edge length.
 //! \param iterations The number of iterations
+//! \param use_tangential_smoothing Use vertex smoothing.
 //! \param use_projection Use back-projection to the input surface.
 //! \pre Input mesh needs to be a triangle mesh.
 //! \throw InvalidInputException if the input precondition is violated.
 //! \ingroup algorithms
 void uniform_remeshing(SurfaceMesh& mesh, Scalar edge_length,
                        unsigned int iterations = 10,
+                       bool use_tangential_smoothing=true,
                        bool use_projection = true);
 
 //! \brief Perform adaptive remeshing.
@@ -31,6 +33,7 @@ void uniform_remeshing(SurfaceMesh& mesh, Scalar edge_length,
 //! \param max_edge_length The maximum edge length.
 //! \param approx_error The maximum approximation error.
 //! \param iterations The number of iterations.
+//! \param use_tangential_smoothing Use vertex smoothing.
 //! \param use_projection Use back-projection to the input surface.
 //! \pre Input mesh needs to be a triangle mesh.
 //! \throw InvalidInputException if the input precondition is violated.
@@ -38,6 +41,7 @@ void uniform_remeshing(SurfaceMesh& mesh, Scalar edge_length,
 void adaptive_remeshing(SurfaceMesh& mesh, Scalar min_edge_length,
                         Scalar max_edge_length, Scalar approx_error,
                         unsigned int iterations = 10,
+                        bool use_tangential_smoothing=true,
                         bool use_projection = true);
 
 } // namespace pmp

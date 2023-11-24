@@ -253,10 +253,12 @@ public:
     Remeshing(SurfaceMesh& mesh);
 
     void uniform_remeshing(Scalar edge_length, unsigned int iterations = 10,
+                           bool use_tangential_smoothing = true,
                            bool use_projection = true);
 
     void adaptive_remeshing(Scalar min_edge_length, Scalar max_edge_length,
                             Scalar approx_error, unsigned int iterations = 10,
+                            bool use_tangential_smoothing = true,
                             bool use_projection = true);
 
 private:
@@ -328,6 +330,7 @@ Remeshing::Remeshing(SurfaceMesh& mesh)
 }
 
 void Remeshing::uniform_remeshing(Scalar edge_length, unsigned int iterations,
+                                  bool use_tangential_smoothing,
                                   bool use_projection)
 {
     uniform_ = true;
@@ -346,7 +349,10 @@ void Remeshing::uniform_remeshing(Scalar edge_length, unsigned int iterations,
 
         flip_edges();
 
-        tangential_smoothing(5);
+        if (use_tangential_smoothing)
+        {
+            tangential_smoothing(5);
+        }
     }
 
     remove_caps();
@@ -356,7 +362,9 @@ void Remeshing::uniform_remeshing(Scalar edge_length, unsigned int iterations,
 
 void Remeshing::adaptive_remeshing(Scalar min_edge_length,
                                    Scalar max_edge_length, Scalar approx_error,
-                                   unsigned int iterations, bool use_projection)
+                                   unsigned int iterations,
+                                   bool use_tangential_smoothing,
+                                   bool use_projection)
 {
     uniform_ = false;
     min_edge_length_ = min_edge_length;
@@ -376,7 +384,10 @@ void Remeshing::adaptive_remeshing(Scalar min_edge_length,
 
         flip_edges();
 
-        tangential_smoothing(5);
+        if (use_tangential_smoothing)
+        {
+            tangential_smoothing(5);
+        }
     }
 
     remove_caps();
@@ -1180,18 +1191,21 @@ Point Remeshing::weighted_centroid(Vertex v)
 } // namespace
 
 void uniform_remeshing(SurfaceMesh& mesh, Scalar edge_length,
-                       unsigned int iterations, bool use_projection)
+                       unsigned int iterations, bool use_tangential_smoothing,
+                       bool use_projection)
 {
-    Remeshing(mesh).uniform_remeshing(edge_length, iterations, use_projection);
+    Remeshing(mesh).uniform_remeshing(edge_length, iterations,
+                                      use_tangential_smoothing, use_projection);
 }
 
 void adaptive_remeshing(SurfaceMesh& mesh, Scalar min_edge_length,
                         Scalar max_edge_length, Scalar approx_error,
-                        unsigned int iterations, bool use_projection)
+                        unsigned int iterations, bool use_tangential_smoothing,
+                        bool use_projection)
 {
-    Remeshing(mesh).adaptive_remeshing(min_edge_length, max_edge_length,
-                                       approx_error, iterations,
-                                       use_projection);
+    Remeshing(mesh).adaptive_remeshing(
+        min_edge_length, max_edge_length, approx_error, iterations,
+        use_tangential_smoothing, use_projection);
 }
 
 } // namespace pmp
